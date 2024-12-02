@@ -1,0 +1,55 @@
+def encrypt_rail_fence_cipher(plaintext, num_rails):
+    rail = [''] * num_rails
+    direction_down = False
+    row = 0
+    
+    for char in plaintext:
+        rail[row] += char
+        if row == 0 or row == num_rails - 1:
+            direction_down = not direction_down
+        row += 1 if direction_down else -1
+    
+    ciphertext = ''.join(rail)
+    return ciphertext
+
+def decrypt_rail_fence_cipher(ciphertext, num_rails):
+    rail = [['\n' for _ in range(len(ciphertext))] for _ in range(num_rails)]
+    direction_down = None
+    row, col = 0, 0
+    
+    for i in range(len(ciphertext)):
+        if row == 0:
+            direction_down = True
+        if row == num_rails - 1:
+            direction_down = False
+        rail[row][col] = '*'
+        col += 1
+        row += 1 if direction_down else -1
+    
+    index = 0
+    for i in range(num_rails):
+        for j in range(len(ciphertext)):
+            if rail[i][j] == '*' and index < len(ciphertext):
+                rail[i][j] = ciphertext[index]
+                index += 1
+    
+    plaintext = []
+    row, col = 0, 0
+    for i in range(len(ciphertext)):
+        if row == 0:
+            direction_down = True
+        if row == num_rails - 1:
+            direction_down = False
+        if rail[row][col] != '\n':
+            plaintext.append(rail[row][col])
+            col += 1
+        row += 1 if direction_down else -1
+    
+    return ''.join(plaintext)
+
+plaintext = input("Enter a text: ")
+num_rails = 3
+ciphertext = encrypt_rail_fence_cipher(plaintext, num_rails)
+print(f"Encrypted: {ciphertext}")
+decrypted_text = decrypt_rail_fence_cipher(ciphertext, num_rails)
+print(f"Decrypted: {decrypted_text}")
